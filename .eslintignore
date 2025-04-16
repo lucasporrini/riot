@@ -1,0 +1,9 @@
+**/node_modules/*
+**/out/*
+**/.next/*
+**/.turbo/*
+**/dist/*
+**/build/*
+**/coverage/*
+*.config.js
+*.setup.js 
