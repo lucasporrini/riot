@@ -1,7 +1,6 @@
 "use client";
 
 import { Loader } from "@/components/loader";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getUserDataByPuuid, getUserLeagueData } from "@/lib/actions/users";
 import { useRiotDataStore } from "@/lib/store";
 import { RequestResponse, UserData as UserDataType } from "@/lib/types";
@@ -54,23 +53,16 @@ export const UserData = ({ userId }: { userId: string }) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
     >
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>User Data</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center">
-            <span>{userData?.gameName}</span>
-            <span>#{userData?.tagLine}</span>
-          </div>
-          {userLeagueData?.data && (
-            <div className="flex items-center">
-              <span>{userLeagueData?.data?.[0]?.tier}</span>
-              <span>{userLeagueData?.data?.[0]?.rank}</span>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      <div className="flex items-center">
+        <span>{userData?.gameName}</span>
+        <span>#{userData?.tagLine}</span>
+      </div>
+      {userLeagueData?.data && (
+        <div className="flex items-center">
+          <span>{userLeagueData?.data?.[0]?.tier}</span>
+          <span>{userLeagueData?.data?.[0]?.rank}</span>
+        </div>
+      )}
     </motion.div>
   );
 };
