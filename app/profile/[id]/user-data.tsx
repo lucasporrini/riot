@@ -53,9 +53,9 @@ export const UserData = ({ userId }: { userId: string }) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
     >
-      <div className="flex items-center">
-        <span>{userData?.gameName}</span>
-        <span>#{userData?.tagLine}</span>
+      <div className="flex items-center gap-1">
+        <span className="font-semibold">{userData?.gameName}</span>
+        <span className="text-gray-500">#{userData?.tagLine}</span>
       </div>
       {userLeagueData?.data && (
         <div className="flex items-center">
