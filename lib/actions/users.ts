@@ -23,7 +23,31 @@ export const getUserDataByGameName = async (
   const response = await fetch(
     config.riotApiAccountUrl.userDataUrlByGameName(gameName, tagLine, region)
   );
-  console.log("response from server", response);
+
+  if (!response.ok) {
+    return {
+      ok: false,
+      data: null,
+    };
+  }
+
+  const data = await response.json();
+
+  return {
+    ok: true,
+    data: data as UserDataType,
+  };
+};
+
+export const getUserDataByGameNameAndTagLine = async (
+  gameName: string,
+  tagLine: string,
+  region: Region
+): Promise<RequestResponse<UserDataType | null>> => {
+  const response = await fetch(
+    config.riotApiAccountUrl.userDataUrlByGameName(gameName, tagLine, region)
+  );
+
   if (!response.ok) {
     return {
       ok: false,

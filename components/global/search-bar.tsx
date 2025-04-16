@@ -1,6 +1,6 @@
 "use client";
 
-import { RegionMap } from "@/lib/constantes";
+import { REGION_MAP } from "@/lib/constantes";
 import { useRiotDataStore } from "@/lib/store";
 import { Input } from "../ui/input";
 import {
@@ -24,7 +24,7 @@ export const SearchBar = () => {
           />
         </SelectTrigger>
         <SelectContent className="text-xs bg-background">
-          {Object.entries(RegionMap).map(([key, value]) => (
+          {Object.entries(REGION_MAP).map(([key, value]) => (
             <SelectItem key={key} value={value} className="hover:bg-card">
               {key}
             </SelectItem>

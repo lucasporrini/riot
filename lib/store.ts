@@ -13,8 +13,9 @@ export const useRiotDataStore = create<Store>((set) => ({
     puuid: "",
     gameName: "",
     tagLine: "",
+    rank: [],
   },
   setUserData: (userData) => set({ userData }),
-  defaultRegion: "EUW1",
+  defaultRegion: "EUW",
   setDefaultRegion: (defaultRegion) => set({ defaultRegion }),
 }));

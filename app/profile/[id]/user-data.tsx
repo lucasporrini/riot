@@ -1,7 +1,12 @@
 "use client";
 
 import { Loader } from "@/components/loader";
-import { getUserDataByPuuid, getUserSummonerData } from "@/lib/actions/users";
+import { Button } from "@/components/ui/button";
+import {
+  getUserDataByGameNameAndTagLine,
+  getUserLeagueData,
+  getUserSummonerData,
+} from "@/lib/actions/users";
 import config from "@/lib/global.config";
 import { useRiotDataStore } from "@/lib/store";
 import { useQuery } from "@tanstack/react-query";
@@ -10,16 +15,23 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
-export const UserData = ({ userId }: { userId: string }) => {
+export const UserData = ({ user }: { user: string }) => {
   const { userData, setUserData, defaultRegion } = useRiotDataStore();
   const router = useRouter();
 
-  const { refetch } = useQuery({
-    queryKey: ["user-data", userId],
+  const { refetch, isFetching } = useQuery({
+    queryKey: ["user-data", user],
     queryFn: async () => {
-      const response = await getUserDataByPuuid(userId, "EUROPE");
+      const decodedUser = decodeURIComponent(user);
+      const parts = decodedUser.split("-");
+      const tagLine = parts.pop() || "";
+      const gameName = parts.join("-");
 
-      console.log("response", response);
+      const response = await getUserDataByGameNameAndTagLine(
+        gameName,
+        tagLine,
+        "EUROPE"
+      );
 
       if (!response.ok || !response.data) {
         router.push("/");
@@ -31,29 +43,40 @@ export const UserData = ({ userId }: { userId: string }) => {
         defaultRegion
       );
 
-      console.log("profileResponse", profileResponse);
+      const leagueResponse = await getUserLeagueData(
+        userData.puuid,
+        defaultRegion
+      );
+
+      if (!leagueResponse.ok || !leagueResponse.data) {
+        setUserData({
+          ...userData,
+          ...response.data,
+          ...profileResponse.data,
+        });
+
+        return response;
+      }
 
       setUserData({
         ...userData,
         ...response.data,
         ...profileResponse.data,
+        rank: [...leagueResponse.data],
       });
-
       return response;
     },
   });
 
   useEffect(() => {
-    if (!userData?.puuid && userId) {
+    if (!userData?.puuid && user) {
       refetch();
     }
-  }, [userId, userData?.puuid, refetch]);
+  }, [user, userData?.puuid, refetch]);
 
   if (!userData?.puuid || !userData?.gameName || !userData?.tagLine) {
     return <Loader />;
   }
-
-  console.log("userData", userData);
 
   return (
     <motion.div
@@ -62,7 +85,7 @@ export const UserData = ({ userId }: { userId: string }) => {
       transition={{ duration: 0.5, ease: "easeOut" }}
     >
       <div className="flex items-start gap-2">
-        <div className="w-16 h-16 rounded-lg bg-gray-200 overflow-hidden">
+        <div className="relative size-24 rounded-lg bg-gray-200">
           <Image
             src={config.riotApiProfileIconsUrl.profileIconUrlById(
               userData?.profileIconId ?? 0
@@ -70,11 +93,32 @@ export const UserData = ({ userId }: { userId: string }) => {
             alt="Profile Icon"
             width={64}
             height={64}
+            className="rounded-lg size-24"
           />
+          <div className="bg-secondary absolute bottom-0 right-1/2 translate-x-1/2 translate-y-1/2 rounded-full px-2">
+            <span className=" text-sm">{userData?.summonerLevel}</span>
+          </div>
         </div>
-        <div className="flex items-center gap-1">
-          <span className="font-semibold">{userData?.gameName}</span>
-          <span className="text-gray-500">#{userData?.tagLine}</span>
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center gap-1">
+            <span className="font-semibold">{userData?.gameName}</span>
+            <span className="text-secondary-foreground">
+              #{userData?.tagLine}
+            </span>
+          </div>
+          <div className="flex items-center gap-1">
+            <span className="text-sm text-secondary-foreground">
+              {defaultRegion.replace(/\d+/g, "")}
+            </span>
+          </div>
+          <div className="flex items-center gap-1">
+            <Button size="sm" disabled={isFetching} onClick={() => refetch()}>
+              Update
+            </Button>
+            <Button size="sm" variant="outline" disabled={true}>
+              To be implemented
+            </Button>
+          </div>
         </div>
       </div>
     </motion.div>

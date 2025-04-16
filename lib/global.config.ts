@@ -1,5 +1,5 @@
 import { API_VERSION } from "./constantes";
-import { Region } from "./types";
+import { Division, Queue, Region, Tier } from "./types";
 
 const config = {
   riotApiKey: process.env.RIOT_API_KEY,
@@ -7,7 +7,7 @@ const config = {
     ASIA: "https://asia.api.riotgames.com",
     EUROPE: "https://europe.api.riotgames.com",
     AMERICAS: "https://americas.api.riotgames.com",
-    EUW1: "https://euw1.api.riotgames.com",
+    EUW: "https://euw1.api.riotgames.com",
   },
   riotApiAccountUrl: {
     userDataUrlByGameName: (
@@ -81,6 +81,16 @@ const config = {
       `${config.riotApiUrl[region]}/lol/match/v5/matches/${matchId}?api_key=${config.riotApiKey}`,
     matchTimelineUrl: (matchId: string, region: Region) =>
       `${config.riotApiUrl[region]}/lol/match/v5/matches/${matchId}/timeline?api_key=${config.riotApiKey}`,
+  },
+  riotApiLeagueExpUrl: {
+    leagueExpUrl: (
+      queue: Queue,
+      tier: Tier,
+      division: Division,
+      region: Region,
+      page?: number
+    ) =>
+      `${config.riotApiUrl[region]}/lol/league-exp/v4/entries/${queue}/${tier}/${division}?api_key=${config.riotApiKey}&page=${page}`,
   },
 };
 

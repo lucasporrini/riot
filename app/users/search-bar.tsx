@@ -38,7 +38,7 @@ export const SearchBar = () => {
         ...response.data,
       });
 
-      router.push(`/profile/${response.data.puuid}`);
+      router.push(`/profile/${gameName}-${tagLine}`);
 
       return response.data;
     },

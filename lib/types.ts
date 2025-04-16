@@ -1,4 +1,21 @@
-export type Region = "ASIA" | "EUROPE" | "AMERICAS" | "EUW1";
+export type Region = "ASIA" | "EUROPE" | "AMERICAS" | "EUW";
+export type Queue =
+  | "RANKED_SOLO_5x5"
+  | "RANKED_TFT"
+  | "RANKED_FLEX_SR"
+  | "RANKED_FLEX_TT";
+export type Tier =
+  | "IRON"
+  | "BRONZE"
+  | "SILVER"
+  | "GOLD"
+  | "PLATINUM"
+  | "EMERALD"
+  | "DIAMOND"
+  | "MASTER"
+  | "GRANDMASTER"
+  | "CHALLENGER";
+export type Division = "I" | "II" | "III" | "IV";
 
 export interface RequestResponse<T> {
   data: T;
@@ -20,7 +37,10 @@ export type UserSummonerDataType = {
   summonerLevel: number;
 };
 
-export type UserStore = UserDataType & Partial<UserSummonerDataType>;
+export type UserStore = UserDataType &
+  Partial<UserSummonerDataType> & {
+    rank: Partial<UserLeagueData>;
+  };
 
 export interface UserLeagueData {
   leagueId: string;
@@ -37,3 +57,10 @@ export interface UserLeagueData {
   freshBlood: boolean;
   hotStreak: boolean;
 }
+
+export type Tabs = {
+  label: string;
+  value: string;
+  render: React.ReactNode;
+  default?: boolean;
+};
