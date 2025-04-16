@@ -1,5 +1,6 @@
 "use client";
 
+import { Loader } from "@/components/loader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getUserDataByPuuid, getUserLeagueData } from "@/lib/actions/users";
 import { useRiotDataStore } from "@/lib/store";
@@ -7,17 +8,19 @@ import { RequestResponse, UserData as UserDataType } from "@/lib/types";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { motion } from "motion/react";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export const UserData = ({ userId }: { userId: string }) => {
   const { userData, setUserData } = useRiotDataStore();
   const router = useRouter();
 
-  const { data: userLeagueData } = useQuery({
-    queryKey: ["userLeagueData", userData.puuid],
-    queryFn: () => getUserLeagueData(userData.puuid, "EUROPE"),
+  const { data: userLeagueData, refetch: refetchLeagueData } = useQuery({
+    queryKey: ["userLeagueData", userData?.puuid],
+    queryFn: () => getUserLeagueData(userData?.puuid || "", "EUROPE"),
+    enabled: !!userData?.puuid,
   });
 
-  useMutation({
+  const mutation = useMutation({
     mutationFn: () => getUserDataByPuuid(userId, "EUROPE"),
     onSuccess: (data: RequestResponse<UserDataType | null>) => {
       if (!data.ok || !data.data) {
@@ -29,12 +32,20 @@ export const UserData = ({ userId }: { userId: string }) => {
     },
   });
 
-  if (!userData.puuid || !userData.gameName || !userData.tagLine) {
-    return null;
-  }
+  useEffect(() => {
+    if (!userData?.puuid && userId) {
+      mutation.mutate();
+    }
+  }, [userId, userData?.puuid, mutation]);
 
-  if (!userId) {
-    router.push("/");
+  useEffect(() => {
+    if (userData?.puuid) {
+      refetchLeagueData();
+    }
+  }, [userData?.puuid, refetchLeagueData]);
+
+  if (!userData?.puuid || !userData?.gameName || !userData?.tagLine) {
+    return <Loader />;
   }
 
   return (
@@ -42,7 +53,6 @@ export const UserData = ({ userId }: { userId: string }) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className="w-full"
     >
       <Card className="w-full max-w-md">
         <CardHeader>

@@ -1,0 +1,16 @@
+import { ModeToggle } from "../themes/toggle-button";
+import { SearchBar } from "./search-bar";
+
+export const Header = () => {
+  return (
+    <div className="w-full flex items-center bg-gray-300">
+      <div className="w-full bg-blue-300 mx-auto max-w-5xl flex items-center justify-between px-4 py-2">
+        <div className="flex items-center gap-6">
+          <span className="text-lg font-bold">Header</span>
+          <SearchBar />
+        </div>
+        <ModeToggle />
+      </div>
+    </div>
+  );
+};

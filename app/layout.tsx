@@ -1,5 +1,5 @@
+import { Header } from "@/components/global/header";
 import { ThemeProvider } from "@/components/themes/provider";
-import { ModeToggle } from "@/components/themes/toggle-button";
 import { Toaster } from "@/components/ui/sonner";
 import type { Metadata } from "next";
 import "./globals.css";
@@ -25,9 +25,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <Providers>
-            <div className="flex items-center justify-end">
-              <ModeToggle />
-            </div>
+            <Header />
             {children}
           </Providers>
           <Toaster />

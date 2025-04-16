@@ -42,7 +42,7 @@ export const SearchBar = () => {
     const [game, tag] = name.split("#");
     setGameName(game);
     setTagLine(tag);
-    toast.info(`Searching for ${game}#${tag}`);
+
     mutation.mutate();
   };
 
@@ -53,7 +53,7 @@ export const SearchBar = () => {
         value={name}
         onChange={(e) => setName(e.target.value)}
       />{" "}
-      <Button variant="reverse" onClick={handleSearch}>
+      <Button variant="outline" onClick={handleSearch}>
         Search
       </Button>
     </div>
