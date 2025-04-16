@@ -5,11 +5,22 @@ export interface RequestResponse<T> {
   ok: boolean;
 }
 
-export interface UserData {
+export type UserDataType = {
   puuid: string;
   gameName: string;
   tagLine: string;
-}
+};
+
+export type UserSummonerDataType = {
+  id: string;
+  accountId: string;
+  puuid: string;
+  profileIconId: number;
+  revisionDate: number;
+  summonerLevel: number;
+};
+
+export type UserStore = UserDataType & Partial<UserSummonerDataType>;
 
 export interface UserLeagueData {
   leagueId: string;

@@ -1,9 +1,9 @@
 import { create } from "zustand";
-import { Region, UserData } from "./types";
+import { Region, UserStore } from "./types";
 
 interface Store {
-  userData: UserData;
-  setUserData: (userData: UserData) => void;
+  userData: UserStore;
+  setUserData: (userData: UserStore) => void;
   defaultRegion: Region;
   setDefaultRegion: (defaultRegion: Region) => void;
 }

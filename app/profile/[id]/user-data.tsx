@@ -1,51 +1,59 @@
 "use client";
 
 import { Loader } from "@/components/loader";
-import { getUserDataByPuuid, getUserLeagueData } from "@/lib/actions/users";
+import { getUserDataByPuuid, getUserSummonerData } from "@/lib/actions/users";
+import config from "@/lib/global.config";
 import { useRiotDataStore } from "@/lib/store";
-import { RequestResponse, UserData as UserDataType } from "@/lib/types";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { motion } from "motion/react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 export const UserData = ({ userId }: { userId: string }) => {
-  const { userData, setUserData } = useRiotDataStore();
+  const { userData, setUserData, defaultRegion } = useRiotDataStore();
   const router = useRouter();
 
-  const { data: userLeagueData, refetch: refetchLeagueData } = useQuery({
-    queryKey: ["userLeagueData", userData?.puuid],
-    queryFn: () => getUserLeagueData(userData?.puuid || "", "EUROPE"),
-    enabled: !!userData?.puuid,
-  });
+  const { refetch } = useQuery({
+    queryKey: ["user-data", userId],
+    queryFn: async () => {
+      const response = await getUserDataByPuuid(userId, "EUROPE");
 
-  const mutation = useMutation({
-    mutationFn: () => getUserDataByPuuid(userId, "EUROPE"),
-    onSuccess: (data: RequestResponse<UserDataType | null>) => {
-      if (!data.ok || !data.data) {
+      console.log("response", response);
+
+      if (!response.ok || !response.data) {
         router.push("/");
-        return;
+        return { ok: false, data: null };
       }
 
-      setUserData(data.data);
+      const profileResponse = await getUserSummonerData(
+        response.data.puuid,
+        defaultRegion
+      );
+
+      console.log("profileResponse", profileResponse);
+
+      setUserData({
+        ...userData,
+        ...response.data,
+        ...profileResponse.data,
+      });
+
+      return response;
     },
   });
 
   useEffect(() => {
     if (!userData?.puuid && userId) {
-      mutation.mutate();
+      refetch();
     }
-  }, [userId, userData?.puuid, mutation]);
-
-  useEffect(() => {
-    if (userData?.puuid) {
-      refetchLeagueData();
-    }
-  }, [userData?.puuid, refetchLeagueData]);
+  }, [userId, userData?.puuid, refetch]);
 
   if (!userData?.puuid || !userData?.gameName || !userData?.tagLine) {
     return <Loader />;
   }
+
+  console.log("userData", userData);
 
   return (
     <motion.div
@@ -53,16 +61,22 @@ export const UserData = ({ userId }: { userId: string }) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
     >
-      <div className="flex items-center gap-1">
-        <span className="font-semibold">{userData?.gameName}</span>
-        <span className="text-gray-500">#{userData?.tagLine}</span>
-      </div>
-      {userLeagueData?.data && (
-        <div className="flex items-center">
-          <span>{userLeagueData?.data?.[0]?.tier}</span>
-          <span>{userLeagueData?.data?.[0]?.rank}</span>
+      <div className="flex items-start gap-2">
+        <div className="w-16 h-16 rounded-lg bg-gray-200 overflow-hidden">
+          <Image
+            src={config.riotApiProfileIconsUrl.profileIconUrlById(
+              userData?.profileIconId ?? 0
+            )}
+            alt="Profile Icon"
+            width={64}
+            height={64}
+          />
         </div>
-      )}
+        <div className="flex items-center gap-1">
+          <span className="font-semibold">{userData?.gameName}</span>
+          <span className="text-gray-500">#{userData?.tagLine}</span>
+        </div>
+      </div>
     </motion.div>
   );
 };
