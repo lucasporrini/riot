@@ -7,6 +7,7 @@ import {
 import config from "@/lib/global.config";
 import { useRiotDataStore } from "@/lib/store";
 import { Match } from "@/lib/types";
+import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import { useMemo } from "react";
@@ -100,7 +101,12 @@ const GamesItem = ({ game }: { game: Match | null }) => {
           <div className="w-10 h-10" />
         )}
         <div className="flex items-center gap-2">
-          <div className="bg-muted p-1 rounded-md w-10 h-10 flex items-center justify-center">
+          <div
+            className={cn(
+              "bg-muted p-1 rounded-md w-10 h-10 flex items-center justify-center",
+              playerPerformance.win ? "bg-green-800" : "bg-red-800"
+            )}
+          >
             {roleIconPath ? (
               <Image src={roleIconPath} alt="role" width={30} height={30} />
             ) : (
