@@ -32,7 +32,7 @@ export const GameDetails = ({
           <EyeIcon />
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-5xl">
+      <DialogContent className="max-w-4xl overflow-y-scroll max-h-[90%]">
         <DialogTitle>
           <div className="flex items-center gap-2">
             <span>Game details</span>

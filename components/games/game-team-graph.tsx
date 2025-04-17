@@ -1,5 +1,6 @@
 import config from "@/lib/global.config";
 import { Match, MatchParticipant } from "@/lib/types";
+import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { useMemo } from "react";
 
@@ -12,8 +13,8 @@ export const GameTeamGraph = ({ match }: GameTeamGraphProps) => {
   const redTeam = match.info.participants.filter((p) => p.teamId === 200);
 
   return (
-    <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
-      <div className="bg-blue-950 text-white p-2">
+    <div className="rounded-lg bg-card text-card-foreground shadow-sm overflow-hidden">
+      <div className="bg-blue-950 text-white p-2 text-sm">
         <div className="flex justify-between items-center">
           <h3>Defeat (Blue Team)</h3>
           <div className="flex gap-4">
@@ -33,7 +34,7 @@ export const GameTeamGraph = ({ match }: GameTeamGraphProps) => {
         ))}
       </div>
 
-      <div className="bg-red-950 text-white p-2 mt-4">
+      <div className="bg-red-950 text-white p-2 mt-2 text-sm">
         <div className="flex justify-between items-center">
           <h3>Victory (Red Team)</h3>
           <div className="flex gap-4">
@@ -68,14 +69,14 @@ const TeamRow = ({
     [participant.assists, participant.deaths, participant.kills]
   );
 
-  const kdaRatio = useMemo(
-    () =>
-      (
-        (participant.kills + participant.assists) /
-        Math.max(1, participant.deaths)
-      ).toFixed(2),
-    [participant.assists, participant.deaths, participant.kills]
-  );
+  const kdaRatio = useMemo(() => {
+    if (participant.deaths === 0) return "Perfect";
+
+    return (
+      (participant.kills + participant.assists) /
+      Math.max(1, participant.deaths)
+    ).toFixed(2);
+  }, [participant.assists, participant.deaths, participant.kills]);
 
   const totalCs = useMemo(
     () => participant.totalMinionsKilled + participant.neutralMinionsKilled,
@@ -94,7 +95,7 @@ const TeamRow = ({
 
   return (
     <div className="flex items-center justify-between gap-4 p-2">
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 w-40">
         <Image
           src={config.riotApiChampionUrl.championSquareIconUrl(
             participant.championName
@@ -105,7 +106,7 @@ const TeamRow = ({
           className="w-8 h-8 rounded-md"
         />
         <div className="flex flex-col">
-          <span className="text-sm font-medium min-w-fit truncate">
+          <span className="text-sm font-medium">
             {participant.riotIdGameName}
           </span>
           <span className="text-xs text-gray-500">
@@ -114,9 +115,26 @@ const TeamRow = ({
         </div>
       </div>
 
-      <div className="w-24 text-center">
-        {kda}
-        <span className="text-sm text-gray-500 ml-1">({kdaRatio})</span>
+      <div className="flex flex-col w-24 text-center">
+        <span>{kda}</span>
+        <span
+          className={cn("text-xs ml-1", {
+            "text-gray-500":
+              kdaRatio !== "Perfect" && parseFloat(kdaRatio) < 2.5,
+            "text-green-500":
+              kdaRatio !== "Perfect" &&
+              parseFloat(kdaRatio) >= 2.5 &&
+              parseFloat(kdaRatio) < 4,
+            "text-blue-500":
+              kdaRatio !== "Perfect" &&
+              parseFloat(kdaRatio) >= 4 &&
+              parseFloat(kdaRatio) < 5,
+            "text-orange-500":
+              kdaRatio === "Perfect" || parseFloat(kdaRatio) >= 5,
+          })}
+        >
+          {kdaRatio}
+        </span>
       </div>
 
       <div className="w-32 flex items-center gap-2 relative">
@@ -157,7 +175,7 @@ const TeamRow = ({
               height={40}
             />
           ) : (
-            <div className="w-6 h-6 rounded-md bg-background" />
+            <div key={i} className="w-6 h-6 rounded-md bg-background" />
           );
         })}
       </div>
