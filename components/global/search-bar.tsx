@@ -1,8 +1,12 @@
 "use client";
 
 import { REGION_MAP } from "@/lib/constantes";
+import config from "@/lib/global.config";
 import { useRiotDataStore } from "@/lib/store";
+import Image from "next/image";
+import Link from "next/link";
 import { Input } from "../ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import {
   Select,
   SelectContent,
@@ -31,10 +35,44 @@ export const SearchBar = () => {
           ))}
         </SelectContent>
       </Select>
-      <Input
-        className="h-8 text-xs px-2 py-1 bg-white rounded-l-none border-none ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 w-80"
-        placeholder="Game name + tag"
-      />
+      <Popover>
+        <PopoverTrigger>
+          <Input
+            className="h-8 text-xs px-2 py-1 bg-white rounded-l-none border-none ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 w-80"
+            placeholder="Game name + tag"
+          />
+        </PopoverTrigger>
+        <PopoverContent className="w-80 p-1 space-y-1">
+          {[10, 21, 32, 43, 54].map((index) => (
+            <ResultItem key={index} />
+          ))}
+        </PopoverContent>
+      </Popover>
     </div>
+  );
+};
+
+const ResultItem = () => {
+  const { userData } = useRiotDataStore();
+
+  return (
+    <Link
+      className="flex items-center justify-between p-1 rounded-md hover:bg-muted"
+      href=""
+    >
+      <div className="flex items-center gap-2">
+        <Image
+          src={config.riotApiProfileIconsUrl.profileIconUrlById(
+            userData?.profileIconId ?? 0
+          )}
+          alt="Profiles picture"
+          width={20}
+          height={20}
+          className="size-10 bg-accent rounded-md"
+        />
+        <span>Player name</span>
+      </div>
+      <span>Rank</span>
+    </Link>
   );
 };

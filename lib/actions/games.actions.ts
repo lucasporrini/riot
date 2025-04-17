@@ -57,7 +57,5 @@ export const getMatchesDetails = async (matchIds: string[], region: Region) => {
     matchIds.map((matchId) => getMatchDetails(matchId, region))
   );
 
-  console.log("matchesData", matchesData);
-
   return matchesData.map((match) => match.data);
 };

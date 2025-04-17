@@ -16,6 +16,21 @@ export type Tier =
   | "GRANDMASTER"
   | "CHALLENGER";
 export type Division = "I" | "II" | "III" | "IV";
+export type Roles =
+  | "TOP"
+  | "JUNGLE"
+  | "MIDDLE"
+  | "BOTTOM"
+  | "SUPPORT"
+  | "CARRY"
+  | "UTILITY";
+export type TeamPosition =
+  | "TOP"
+  | "JUNGLE"
+  | "MIDDLE"
+  | "BOTTOM"
+  | "SUPPORT"
+  | "UTILITY";
 
 export interface RequestResponse<T> {
   data: T;
@@ -192,7 +207,7 @@ export interface MatchParticipant {
   retreatPings: number;
   riotIdGameName: string;
   riotIdTagline: string;
-  role: string;
+  role: Roles;
   sightWardsBoughtInGame: number;
   spell1Casts: number;
   spell2Casts: number;
@@ -208,7 +223,7 @@ export interface MatchParticipant {
   summonerName: string;
   teamEarlySurrendered: boolean;
   teamId: number;
-  teamPosition: string;
+  teamPosition: TeamPosition;
   timeCCingOthers: number;
   timePlayed: number;
   totalAllyJungleMinionsKilled: number;

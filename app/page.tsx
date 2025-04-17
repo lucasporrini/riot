@@ -2,16 +2,13 @@
 
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { toast } from "sonner";
 
 export default function Home() {
-  const handleClick = () => {
-    toast.success("Hello world!");
-  };
-
   return (
     <div>
-      <Button onClick={handleClick}>Click me</Button>
+      <Link href="/profile/BANDEUR%202%20NIECES-NIECE">
+        <Button>Click me</Button>
+      </Link>
       <Link href="/users">
         <Button>Users</Button>
       </Link>
