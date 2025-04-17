@@ -1,4 +1,5 @@
 import Link from "next/link";
+
 import { ModeToggle } from "../themes/toggle-button";
 import { SearchBar } from "./search-bar";
 

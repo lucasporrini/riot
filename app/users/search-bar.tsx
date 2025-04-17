@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { getUserDataByGameName } from "@/lib/actions/users";
+import { getUserDataByGameName } from "@/lib/actions/users.actions";
 import { useRiotDataStore } from "@/lib/store";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
@@ -25,8 +25,6 @@ export const SearchBar = () => {
       }
 
       const response = await getUserDataByGameName(gameName, tagLine, "EUROPE");
-
-      console.log("response", response);
 
       if (!response.ok || !response.data) {
         toast.error("User not found");

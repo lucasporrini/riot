@@ -6,7 +6,7 @@ import {
   getUserDataByGameNameAndTagLine,
   getUserLeagueData,
   getUserSummonerData,
-} from "@/lib/actions/users";
+} from "@/lib/actions/users.actions";
 import config from "@/lib/global.config";
 import { useRiotDataStore } from "@/lib/store";
 import { useQuery } from "@tanstack/react-query";
@@ -113,7 +113,7 @@ export const UserData = ({ user }: { user: string }) => {
           </div>
           <div className="flex items-center gap-1">
             <Button size="sm" disabled={isFetching} onClick={() => refetch()}>
-              Update
+              {isFetching ? "Updating..." : "Update"}
             </Button>
             <Button size="sm" variant="outline" disabled={true}>
               To be implemented

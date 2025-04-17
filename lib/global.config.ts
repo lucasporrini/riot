@@ -75,8 +75,25 @@ const config = {
       type?: string,
       start?: number,
       count?: number
-    ) =>
-      `${config.riotApiUrl[region]}/lol/match/v5/matches/by-puuid/${puuid}/ids?api_key=${config.riotApiKey}&startTime=${startTime}&endTime=${endTime}&queue=${queue}&type=${type}&start=${start}&count=${count}`,
+    ) => {
+      const queryParams = [];
+
+      if (startTime) queryParams.push(`startTime=${startTime}`);
+      if (endTime) queryParams.push(`endTime=${endTime}`);
+      if (queue) queryParams.push(`queue=${queue}`);
+      if (type) queryParams.push(`type=${type}`);
+      if (start !== undefined) queryParams.push(`start=${start}`);
+      if (count !== undefined) queryParams.push(`count=${count}`);
+
+      const queryString =
+        queryParams.length > 0 ? `&${queryParams.join("&")}` : "";
+
+      return `${
+        config.riotApiUrl[region]
+      }/lol/match/v5/matches/by-puuid/${puuid}/ids?api_key=${
+        config.riotApiKey
+      }${queryString && "&" + queryString}`;
+    },
     matchUrl: (matchId: string, region: Region) =>
       `${config.riotApiUrl[region]}/lol/match/v5/matches/${matchId}?api_key=${config.riotApiKey}`,
     matchTimelineUrl: (matchId: string, region: Region) =>
