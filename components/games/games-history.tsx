@@ -22,7 +22,7 @@ export const GamesHistory = () => {
     queryFn: async () => {
       const response = await getGamesHistory(userData.puuid, "EUROPE");
 
-      if (!response.ok) return null;
+      if (!response.ok) return [];
 
       const matchesDetails = await getMatchesDetails(response.data, "EUROPE");
 
@@ -35,13 +35,15 @@ export const GamesHistory = () => {
       {isFetching && !data?.length ? (
         <Loader />
       ) : (
-        data?.map((game, index) => <GamesItem key={index} game={game} />)
+        data?.map(
+          (game, index) => game && <GamesItem key={index} game={game} />
+        )
       )}
     </GamesHistoryLayout>
   );
 };
 
-const GamesItem = ({ game }: { game: Match | null }) => {
+const GamesItem = ({ game }: { game: Match }) => {
   const { userData } = useRiotDataStore();
 
   const playerPerformance = useMemo(

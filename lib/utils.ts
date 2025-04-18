@@ -1,6 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { TeamPosition } from "./types";
+import { AllChampions, TeamPosition } from "./types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -65,3 +65,14 @@ export const getRole = (role: TeamPosition): string => {
  * ```
  */
 export const isWinner = (win: boolean) => (win ? "Victory" : "Defeat");
+
+/**
+ * Get the champion data from the all champions
+ * @param allChampions - The all champions
+ * @param championId - The champion id
+ * @returns The champion data
+ */
+export const getChampionFromAllChampions = (
+  allChampions: AllChampions,
+  championId: number
+) => Object.values(allChampions).find((c) => c.key == championId);

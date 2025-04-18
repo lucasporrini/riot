@@ -1,7 +1,7 @@
 "use client";
 
-import { Loader } from "@/components/loader";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   getUserDataByGameNameAndTagLine,
   getUserLeagueData,
@@ -74,7 +74,7 @@ export const UserData = ({ user }: { user: string }) => {
   }, [user, userData?.puuid, refetch]);
 
   if (!userData?.puuid || !userData?.gameName || !userData?.tagLine) {
-    return <Loader />;
+    return <UserSkeleton />;
   }
 
   return (
@@ -121,5 +121,26 @@ export const UserData = ({ user }: { user: string }) => {
         </div>
       </div>
     </motion.div>
+  );
+};
+
+const UserSkeleton = () => {
+  return (
+    <div className="flex items-start gap-2">
+      <Skeleton className="size-24 rounded-lg" />
+      <div className="flex flex-col gap-1 flex-1">
+        <div className="flex items-center gap-1">
+          <Skeleton className="h-5 w-32" />
+          <Skeleton className="h-5 w-20" />
+        </div>
+        <div className="flex items-center gap-1">
+          <Skeleton className="h-5 w-20" />
+        </div>
+        <div className="flex items-center gap-1">
+          <Skeleton className="h-9 w-20" />
+          <Skeleton className="h-9 w-20" />
+        </div>
+      </div>
+    </div>
   );
 };

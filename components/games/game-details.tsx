@@ -1,6 +1,14 @@
+import { getAllChampions } from "@/lib/actions/champions.actions";
+import { ROLE_ORDER } from "@/lib/constantes";
 import QUEUE_TYPE from "@/lib/datas/queues.json";
-import { Match, MatchParticipant, Tabs as TabsType } from "@/lib/types";
+import {
+  AllChampions,
+  Match,
+  MatchParticipant,
+  Tabs as TabsType,
+} from "@/lib/types";
 import { formatGameDuration } from "@/lib/utils";
+import { useQuery } from "@tanstack/react-query";
 import { EyeIcon } from "lucide-react";
 import { useMemo } from "react";
 import { Badge } from "../global/badge";
@@ -20,12 +28,43 @@ export const GameDetails = ({
   game,
   playerPerformance,
 }: {
-  game: Match | null;
+  game: Match;
   playerPerformance: MatchParticipant | undefined;
 }) => {
   const queueType = useMemo(
-    () => QUEUE_TYPE.find((queue) => queue.queueId === game?.info.queueId),
-    [game?.info.queueId]
+    () => QUEUE_TYPE.find((queue) => queue.queueId === game.info.queueId),
+    [game.info.queueId]
+  );
+
+  const { data: allChampions } = useQuery({
+    queryKey: ["allChampions"],
+    queryFn: async () => {
+      const all = await getAllChampions();
+
+      if (!all.ok) return null;
+
+      return all.data.data;
+    },
+  });
+
+  const blueTeam = useMemo(
+    () =>
+      game.info.participants
+        .filter((p) => p.teamId === 100)
+        .sort(
+          (a, b) => ROLE_ORDER[a.teamPosition] - ROLE_ORDER[b.teamPosition]
+        ),
+    [game.info.participants]
+  );
+
+  const redTeam = useMemo(
+    () =>
+      game.info.participants
+        .filter((p) => p.teamId === 200)
+        .sort(
+          (a, b) => ROLE_ORDER[a.teamPosition] - ROLE_ORDER[b.teamPosition]
+        ),
+    [game.info.participants]
   );
 
   if (!game) return null;
@@ -49,28 +88,57 @@ export const GameDetails = ({
           {formatGameDuration(game?.info.gameDuration / 60)}
         </DialogDescription>
 
-        <GameTabs match={game} />
+        <GameTabs
+          match={game}
+          allChampions={allChampions}
+          blueTeam={blueTeam}
+          redTeam={redTeam}
+        />
       </DialogContent>
     </Dialog>
   );
 };
 
-const GameTabs = ({ match }: { match: Match }) => {
+const GameTabs = ({
+  match,
+  allChampions,
+  blueTeam,
+  redTeam,
+}: {
+  match: Match;
+  allChampions: AllChampions;
+  blueTeam: MatchParticipant[];
+  redTeam: MatchParticipant[];
+}) => {
   const GAME_DETAILS_TABS: TabsType[] = useMemo(
     () => [
       {
         label: "Details",
         value: "details",
-        render: <GameTeamGraph match={match} />,
+        render: (
+          <GameTeamGraph
+            match={match}
+            allChampions={allChampions}
+            blueTeam={blueTeam}
+            redTeam={redTeam}
+          />
+        ),
         default: true,
       },
       {
         label: "Unwound",
         value: "unwound",
-        render: <GameUnwound />,
+        render: (
+          <GameUnwound
+            match={match}
+            allChampions={allChampions}
+            blueTeam={blueTeam}
+            redTeam={redTeam}
+          />
+        ),
       },
     ],
-    [match]
+    [allChampions, blueTeam, match, redTeam]
   );
 
   return (

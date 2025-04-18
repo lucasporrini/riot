@@ -1,37 +1,28 @@
-import { getAllChampions } from "@/lib/actions/champions.actions";
-import { ROLE_ORDER } from "@/lib/constantes";
 import config from "@/lib/global.config";
-import { Match, MatchParticipant } from "@/lib/types";
-import { cn, getRole, isWinner } from "@/lib/utils";
-import { useQuery } from "@tanstack/react-query";
+import { AllChampions, Champion, Match, MatchParticipant } from "@/lib/types";
+import {
+  cn,
+  getChampionFromAllChampions,
+  getRole,
+  isWinner,
+} from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 
 interface GameTeamGraphProps {
   match: Match;
+  allChampions: AllChampions;
+  blueTeam: MatchParticipant[];
+  redTeam: MatchParticipant[];
 }
 
-export const GameTeamGraph = ({ match }: GameTeamGraphProps) => {
-  const blueTeam = useMemo(
-    () =>
-      match.info.participants
-        .filter((p) => p.teamId === 100)
-        .sort(
-          (a, b) => ROLE_ORDER[a.teamPosition] - ROLE_ORDER[b.teamPosition]
-        ),
-    [match.info.participants]
-  );
-  const redTeam = useMemo(
-    () =>
-      match.info.participants
-        .filter((p) => p.teamId === 200)
-        .sort(
-          (a, b) => ROLE_ORDER[a.teamPosition] - ROLE_ORDER[b.teamPosition]
-        ),
-    [match.info.participants]
-  );
-
+export const GameTeamGraph = ({
+  match,
+  allChampions,
+  blueTeam,
+  redTeam,
+}: GameTeamGraphProps) => {
   const blueTeamResult = useMemo(() => isWinner(blueTeam[0].win), [blueTeam]);
   const redTeamResult = useMemo(() => isWinner(redTeam[0].win), [redTeam]);
 
@@ -56,7 +47,19 @@ export const GameTeamGraph = ({ match }: GameTeamGraphProps) => {
 
       <div className="flex flex-col">
         {blueTeam.map((participant, index) => (
-          <TeamRow key={index} participant={participant} match={match} />
+          <TeamRow
+            key={index}
+            participant={participant}
+            match={match}
+            champion={
+              allChampions
+                ? getChampionFromAllChampions(
+                    allChampions,
+                    participant.championId
+                  )
+                : null
+            }
+          />
         ))}
       </div>
 
@@ -79,7 +82,19 @@ export const GameTeamGraph = ({ match }: GameTeamGraphProps) => {
 
       <div className="flex flex-col">
         {redTeam.map((participant, index) => (
-          <TeamRow key={index} participant={participant} match={match} />
+          <TeamRow
+            key={index}
+            participant={participant}
+            match={match}
+            champion={
+              allChampions
+                ? getChampionFromAllChampions(
+                    allChampions,
+                    participant.championId
+                  )
+                : null
+            }
+          />
         ))}
       </div>
     </div>
@@ -89,23 +104,12 @@ export const GameTeamGraph = ({ match }: GameTeamGraphProps) => {
 const TeamRow = ({
   participant,
   match,
+  champion,
 }: {
   participant: MatchParticipant;
   match: Match;
+  champion: Champion | null;
 }) => {
-  const { data: allChampions } = useQuery({
-    queryKey: ["allChampions"],
-    queryFn: async () => {
-      const data = await getAllChampions();
-
-      return data;
-    },
-  });
-
-  useEffect(() => {
-    console.log("allChampions", allChampions);
-  }, [allChampions]);
-
   const kda = useMemo(
     () => `${participant.kills}/${participant.deaths}/${participant.assists}`,
     [participant.assists, participant.deaths, participant.kills]
@@ -143,9 +147,9 @@ const TeamRow = ({
       >
         <Image
           src={config.riotApiChampionUrl.championSquareIconUrl(
-            participant.championName
+            champion?.id || participant.championName
           )}
-          alt={participant.championName}
+          alt={champion?.id || participant.championName}
           width={40}
           height={40}
           className="w-8 h-8 rounded-md"

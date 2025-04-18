@@ -4,8 +4,13 @@ import config from "../global.config";
 
 export const getAllChampions = async () => {
   const response = await fetch(config.riotApiChampionUrl.allChampionsUrl());
+
   const data = await response.json();
-  return data;
+
+  return {
+    ok: response.ok,
+    data,
+  };
 };
 
 export const getChampionData = async (championName: string) => {
