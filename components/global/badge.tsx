@@ -13,7 +13,7 @@ export const Badge = ({
     <div
       className={cn(
         "text-xs px-1 py-0.5 rounded-md text-white font-semibold",
-        win ? "bg-green-800" : "bg-red-800",
+        win ? "bg-green-700 dark:bg-green-800" : "bg-red-700 dark:bg-red-800",
         className
       )}
     >

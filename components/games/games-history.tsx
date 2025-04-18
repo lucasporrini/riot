@@ -110,7 +110,7 @@ const GamesItem = ({ game }: { game: Match | null }) => {
             {roleIconPath ? (
               <Image src={roleIconPath} alt="role" width={30} height={30} />
             ) : (
-              <span className="text-xl font-semibold">A</span>
+              <span className="text-xl font-semibold text-white">A</span>
             )}
           </div>
           <span>{playerPerformance?.championName ?? "Not found"}</span>

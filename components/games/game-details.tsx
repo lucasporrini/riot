@@ -1,3 +1,4 @@
+import QUEUE_TYPE from "@/lib/datas/queues.json";
 import { Match, MatchParticipant, Tabs as TabsType } from "@/lib/types";
 import { formatGameDuration } from "@/lib/utils";
 import { EyeIcon } from "lucide-react";
@@ -13,6 +14,7 @@ import {
 } from "../ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { GameTeamGraph } from "./game-team-graph";
+import { GameUnwound } from "./game-unwound";
 
 export const GameDetails = ({
   game,
@@ -21,9 +23,12 @@ export const GameDetails = ({
   game: Match | null;
   playerPerformance: MatchParticipant | undefined;
 }) => {
-  if (!game) return null;
+  const queueType = useMemo(
+    () => QUEUE_TYPE.find((queue) => queue.queueId === game?.info.queueId),
+    [game?.info.queueId]
+  );
 
-  console.log(game);
+  if (!game) return null;
 
   return (
     <Dialog>
@@ -32,7 +37,7 @@ export const GameDetails = ({
           <EyeIcon />
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-4xl overflow-y-scroll max-h-[90%]">
+      <DialogContent className="max-w-4xl h-[90%] overflow-y-scroll">
         <DialogTitle>
           <div className="flex items-center gap-2">
             <span>Game details</span>
@@ -40,8 +45,7 @@ export const GameDetails = ({
           </div>
         </DialogTitle>
         <DialogDescription>
-          {playerPerformance?.championName} - {playerPerformance?.kills}/
-          {playerPerformance?.deaths}/{playerPerformance?.assists} -{" "}
+          {queueType?.description} -{" "}
           {formatGameDuration(game?.info.gameDuration / 60)}
         </DialogDescription>
 
@@ -61,9 +65,9 @@ const GameTabs = ({ match }: { match: Match }) => {
         default: true,
       },
       {
-        label: "TBD",
-        value: "tbd",
-        render: <div>TBD</div>,
+        label: "Unwound",
+        value: "unwound",
+        render: <GameUnwound />,
       },
     ],
     [match]
@@ -82,7 +86,7 @@ const GameTabs = ({ match }: { match: Match }) => {
         ))}
       </TabsList>
       {GAME_DETAILS_TABS.map((tab) => (
-        <TabsContent key={tab.value} value={tab.value}>
+        <TabsContent key={tab.value} value={tab.value} className="h-full">
           {tab.render}
         </TabsContent>
       ))}

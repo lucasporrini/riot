@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { TeamPosition } from "./types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -24,3 +25,43 @@ export const formatGameDuration = (minutes: number): string => {
 
   return `${totalMinutes}:${seconds.toString().padStart(2, "0")}`;
 };
+
+/**
+ * Get the common role from riot API naming
+ * @param role - The riot role
+ * @returns A common role
+ *
+ * Example:
+ * ```
+ * getRole("UTILITY") // returns "SUPPORT"
+ * ```
+ */
+export const getRole = (role: TeamPosition): string => {
+  switch (role) {
+    case "TOP":
+      return "TOP";
+    case "JUNGLE":
+      return "JUNGLE";
+    case "MIDDLE":
+      return "MID";
+    case "BOTTOM":
+      return "ADC";
+    case "UTILITY":
+      return "SUPPORT";
+    default:
+      return "-";
+  }
+};
+
+/**
+ * Determines if a match result is a win or loss
+ * @param win - Boolean indicating whether the match was won
+ * @returns "Victory" if true, "Defeat" if false
+ *
+ * Example:
+ * ```
+ * isWinner(true) // returns "Victory"
+ * isWinner(false) // returns "Defeat"
+ * ```
+ */
+export const isWinner = (win: boolean) => (win ? "Victory" : "Defeat");

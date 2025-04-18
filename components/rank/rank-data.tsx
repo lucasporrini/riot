@@ -5,7 +5,6 @@ import { Queue, UserLeagueData } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
-import { Loader } from "../loader";
 
 export const LeagueData = () => {
   const { userData } = useRiotDataStore();
@@ -29,11 +28,7 @@ export const LeagueData = () => {
   }, [userData.rank, soloLeague, flexLeague]);
 
   if (!soloLeague || !flexLeague) {
-    return (
-      <LeagueLayout title={undefined}>
-        <Loader className="px-2" />
-      </LeagueLayout>
-    );
+    return <LeagueLayout title={undefined} />;
   }
 
   return (
@@ -51,7 +46,7 @@ const LeagueLayout = ({
 }: {
   title: Queue | undefined;
   className?: string;
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }) => {
   const rankedType = useMemo(() => {
     if (!title) return "Ranked";
@@ -66,14 +61,16 @@ const LeagueLayout = ({
       case "RANKED_TFT":
         return "Ranked TFT";
       default:
-        return "Ranked";
+        return "Ranked disabled";
     }
   }, [title]);
 
   return (
     <div className={cn("bg-muted p-1 rounded-md min-w-xs", className)}>
       <h2 className="text-sm font-medium px-2 py-1">{rankedType}</h2>
-      {children}
+      {children || (
+        <span className="text-muted-foreground px-2 text-sm">No data</span>
+      )}
     </div>
   );
 };

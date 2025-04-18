@@ -30,3 +30,12 @@ export const TABS: Tabs[] = [
     render: <MasteriesTab />,
   },
 ];
+
+export const ROLE_ORDER = {
+  TOP: 0,
+  JUNGLE: 1,
+  MIDDLE: 2,
+  BOTTOM: 3,
+  SUPPORT: 4,
+  UTILITY: 4,
+};

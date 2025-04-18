@@ -12,12 +12,11 @@ import { useRiotDataStore } from "@/lib/store";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "motion/react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { toast } from "sonner";
 
 export const UserData = ({ user }: { user: string }) => {
   const { userData, setUserData, defaultRegion } = useRiotDataStore();
-  const router = useRouter();
 
   const { refetch, isFetching } = useQuery({
     queryKey: ["user-data", user],
@@ -34,7 +33,7 @@ export const UserData = ({ user }: { user: string }) => {
       );
 
       if (!response.ok || !response.data) {
-        router.push("/");
+        toast.error("Impossible to fetch user data");
         return { ok: false, data: null };
       }
 
