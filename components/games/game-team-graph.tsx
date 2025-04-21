@@ -240,12 +240,12 @@ const TeamRow = ({
   );
 };
 
-const TotalData = ({
+export const TotalData = ({
   type,
   totalGold,
 }: {
   type: "gold" | "kill";
-  totalGold: number;
+  totalGold: number | string;
 }) => {
   const icon = {
     gold: "gold_icon.webp",
