@@ -22,9 +22,6 @@ export const GameUnwound = ({
   return (
     <div className="min-h-full space-y-4">
       <div className="space-y-2">
-        <h3 className="text-lg font-semibold text-blue-600 dark:text-blue-400">
-          Blue Team
-        </h3>
         {blueTeam.map((player, index) => (
           <PlayerDetails
             key={index}
@@ -37,10 +34,6 @@ export const GameUnwound = ({
       </div>
 
       <div className="space-y-2">
-        <h3 className="text-lg font-semibold text-red-600 dark:text-red-400">
-          Red Team
-        </h3>
-
         {redTeam.map((player, index) => (
           <PlayerDetails
             key={index}
@@ -108,7 +101,7 @@ const PlayerDetails = ({
       <div
         className={cn(
           "absolute top-0 left-0 w-2 h-full",
-          team === "blue" ? "bg-blue-500" : "bg-red-500"
+          team === "blue" ? "bg-blue-800" : "bg-red-800"
         )}
       />
       <div className="flex items-center justify-between">
@@ -124,7 +117,7 @@ const PlayerDetails = ({
           />
           <div>
             <h4 className="font-medium">{player.riotIdGameName}</h4>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-xs text-muted-foreground">
               {player.teamPosition}
             </p>
           </div>

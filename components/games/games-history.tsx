@@ -6,13 +6,14 @@ import {
 } from "@/lib/actions/games.actions";
 import config from "@/lib/global.config";
 import { useRiotDataStore } from "@/lib/store";
-import { Match } from "@/lib/types";
-import { cn } from "@/lib/utils";
+import { Match, MatchParticipant } from "@/lib/types";
+import { cn, roleIconPath } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import { useMemo } from "react";
 import { Loader } from "../loader";
 import { GameDetails } from "./game-details";
+import { GamesRecent } from "./games-recent";
 
 export const GamesHistory = () => {
   const { userData } = useRiotDataStore();
@@ -26,20 +27,29 @@ export const GamesHistory = () => {
 
       const matchesDetails = await getMatchesDetails(response.data, "EUROPE");
 
-      return matchesDetails;
+      const filteredMatches = matchesDetails.filter(
+        (match): match is Match => match !== null
+      );
+
+      return filteredMatches;
     },
   });
 
   return (
-    <GamesHistoryLayout title="Games History">
-      {isFetching && !data?.length ? (
-        <Loader />
-      ) : (
-        data?.map(
-          (game, index) => game && <GamesItem key={index} game={game} />
-        )
-      )}
-    </GamesHistoryLayout>
+    <div className="flex flex-col gap-2 w-full">
+      <GamesHistoryLayout title={`Games Recent (${data?.length} games loaded)`}>
+        <GamesRecent matches={data} />
+      </GamesHistoryLayout>
+      <GamesHistoryLayout title="Games History">
+        {isFetching && !data?.length ? (
+          <Loader />
+        ) : (
+          data?.map(
+            (game, index) => game && <GamesItem key={index} game={game} />
+          )
+        )}
+      </GamesHistoryLayout>
+    </div>
   );
 };
 
@@ -54,35 +64,10 @@ const GamesItem = ({ game }: { game: Match }) => {
     [game?.info.participants, userData.puuid]
   );
 
-  const roleIconPath = useMemo(() => {
-    if (game?.info.gameMode === "CHERRY") return;
-
-    let path: string;
-
-    switch (playerPerformance?.teamPosition) {
-      case "SUPPORT":
-      case "UTILITY":
-        path = "/roles/Role=Support.svg";
-        break;
-      case "BOTTOM":
-        path = "/roles/Role=Bot.svg";
-        break;
-      case "TOP":
-        path = "/roles/Role=Top.svg";
-        break;
-      case "MIDDLE":
-        path = "/roles/Role=Mid.svg";
-        break;
-      case "JUNGLE":
-        path = "/roles/Role=Jungle.svg";
-        break;
-      default:
-        path = "/roles/Role=Top.svg";
-        break;
-    }
-
-    return path;
-  }, [playerPerformance, game]);
+  const roleIcon = useMemo(
+    () => roleIconPath(game, playerPerformance as MatchParticipant),
+    [playerPerformance, game]
+  );
 
   if (!playerPerformance) return null;
 
@@ -109,8 +94,8 @@ const GamesItem = ({ game }: { game: Match }) => {
               playerPerformance.win ? "bg-green-800" : "bg-red-800"
             )}
           >
-            {roleIconPath ? (
-              <Image src={roleIconPath} alt="role" width={30} height={30} />
+            {roleIcon ? (
+              <Image src={roleIcon} alt="role" width={30} height={30} />
             ) : (
               <span className="text-xl font-semibold text-white">A</span>
             )}

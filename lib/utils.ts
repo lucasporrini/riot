@@ -1,6 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { AllChampions, TeamPosition } from "./types";
+import { AllChampions, Match, MatchParticipant, TeamPosition } from "./types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -76,3 +76,36 @@ export const getChampionFromAllChampions = (
   allChampions: AllChampions,
   championId: number
 ) => Object.values(allChampions).find((c) => c.key == championId);
+
+export const roleIconPath = (
+  game: Match | null,
+  playerPerformance: MatchParticipant
+) => {
+  if (game?.info.gameMode === "CHERRY") return "/roles/Role=Top.svg";
+
+  let path: string;
+
+  switch (playerPerformance?.teamPosition) {
+    case "SUPPORT":
+    case "UTILITY":
+      path = "/roles/Role=Support.svg";
+      break;
+    case "BOTTOM":
+      path = "/roles/Role=Bot.svg";
+      break;
+    case "TOP":
+      path = "/roles/Role=Top.svg";
+      break;
+    case "MIDDLE":
+      path = "/roles/Role=Mid.svg";
+      break;
+    case "JUNGLE":
+      path = "/roles/Role=Jungle.svg";
+      break;
+    default:
+      path = "/roles/Role=Top.svg";
+      break;
+  }
+
+  return path;
+};
